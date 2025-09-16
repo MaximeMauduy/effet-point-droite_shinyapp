@@ -3,8 +3,8 @@ library(shiny)
 library(ggplot2)
 
 ui <- fluidPage(
-  titlePanel("📈 Impact d’un point sur la droite de régression"),
-  p("Cher.e étudiant.e, ajoute un point (rouge) et observe comment il influence la droite de régression."),
+  titlePanel("📈 Impact d’un point sur le modèle de régression"),
+  p("Cher.e étudiant.e, ajoute un point (rouge) et observe comment il peut influencer un modèle de régression."),
   p("La droite bleue correspond au modèle initial (sans le point rouge)."),
   p("La droite rouge pointillée correspond au modèle avec le point rouge ajouté."),
   hr(),
@@ -22,7 +22,7 @@ ui <- fluidPage(
       fluidRow(
         column(7, plotOutput("scatterPlot", height = 420)),
         column(5,
-               h4("Équations des droites"),
+               h4("Équations des droites et erreurs"),
                textOutput("eq_bleu"),
                textOutput("eq_rouge")
         )
@@ -111,19 +111,23 @@ server <- function(input, output, session) {
     p
   })
   
-  # équations
+  # équations + erreurs
   output$eq_bleu <- renderText({
     m <- model_base(); req(m)
     coefs <- coef(m)
+    rss <- round(deviance(m), 2)
     paste0("Droite bleue (sans point rouge) : y = ",
-           round(coefs[1], 2), " + ", round(coefs[2], 2), "x")
+           round(coefs[1], 2), " + ", round(coefs[2], 2), "x",
+           " | Erreur (SCE) = ", rss)
   })
   
   output$eq_rouge <- renderText({
     m <- model_all(); req(m)
     coefs <- coef(m)
+    rss <- round(deviance(m), 2)
     paste0("Droite rouge (avec point rouge) : y = ",
-           round(coefs[1], 2), " + ", round(coefs[2], 2), "x")
+           round(coefs[1], 2), " + ", round(coefs[2], 2), "x",
+           " | Erreur (SCE) = ", rss)
   })
   
 }
